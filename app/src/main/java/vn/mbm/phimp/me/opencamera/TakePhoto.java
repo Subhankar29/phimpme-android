@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 /** Entry Activity for the "take photo" widget (see MyWidgetProviderTakePhoto).
  *  This redirects to CameraActivity, but uses an intent extra/bundle to pass the
@@ -32,5 +33,7 @@ public class TakePhoto extends Activity {
 		if( MyDebug.LOG )
 			Log.d(TAG, "onResume");
         super.onResume();
+		Toast.makeText(TakePhoto.this,"take Photo",Toast.LENGTH_LONG).show();
     }
+
 }

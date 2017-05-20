@@ -1,5 +1,6 @@
 package vn.mbm.phimp.me.opencamera;
 
+import vn.mbm.phimp.me.FileUtils;
 import vn.mbm.phimp.me.MainActivity;
 import vn.mbm.phimp.me.Utilities.BasicCallBack;
 import vn.mbm.phimp.me.Utilities.Constants;
@@ -81,9 +82,15 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Toast;
 import android.widget.ZoomControls;
 
 import vn.mbm.phimp.me.R;
+
+import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
+import com.xinlan.imageeditlibrary.editimage.utils.BitmapUtils;
+import com.xinlan.imageeditlibrary.picchooser.SelectPictureActivity;
+
 
 /** The main Activity for Open Camera.
  */
@@ -139,6 +146,8 @@ public class CameraActivity extends Activity implements AudioListener.AudioListe
 	public volatile float test_angle;
 	public volatile String test_last_saved_image;
     static BasicCallBack basicCallback;
+    public static final int ACTION_REQUEST_EDITIMAGE = 9;
+    private String path;
 
     public static void setBasicCallBack(BasicCallBack basicCallBack) {
         basicCallback = basicCallBack;
@@ -1685,8 +1694,9 @@ public class CameraActivity extends Activity implements AudioListener.AudioListe
 				Uri treeUri = resultData.getData();
 				if( MyDebug.LOG )
 					Log.d(TAG, "returned treeUri: " + treeUri);
+                Toast.makeText(CameraActivity.this,"Photo Clicked",Toast.LENGTH_LONG).show();
 				// from https://developer.android.com/guide/topics/providers/document-provider.html#permissions :
-				final int takeFlags = resultData.getFlags()
+				/*final int takeFlags = resultData.getFlags()
 						& (Intent.FLAG_GRANT_READ_URI_PERMISSION
 						| Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 				// Check for the freshest data.
@@ -1694,13 +1704,16 @@ public class CameraActivity extends Activity implements AudioListener.AudioListe
 				SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 				SharedPreferences.Editor editor = sharedPreferences.edit();
 				editor.putString(PreferenceKeys.getSaveLocationSAFPreferenceKey(), treeUri.toString());
-				editor.apply();
+				editor.apply();*/
 
 				if( MyDebug.LOG )
 					Log.d(TAG, "update folder history for saf");
 				updateFolderHistorySAF(treeUri.toString());
 
 				File file = applicationInterface.getStorageUtils().getImageFolder();
+
+                File outputFile = FileUtils.genEditFile();
+                EditImageActivity.start(this,path,outputFile.getAbsolutePath(),ACTION_REQUEST_EDITIMAGE);
 				if( file != null ) {
 					preview.showToast(null, getResources().getString(R.string.changed_save_location) + "\n" + file.getAbsolutePath());
 				}
@@ -1727,6 +1740,8 @@ public class CameraActivity extends Activity implements AudioListener.AudioListe
 			}
 		}
 	}
+
+
 
 	void updateSaveFolder(String new_save_location) {
 		if( MyDebug.LOG )
