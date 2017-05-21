@@ -34,6 +34,7 @@ import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.yalantis.ucrop.UCrop;
 
+import vn.mbm.phimp.me.FileUtils;
 import vn.mbm.phimp.me.R;
 import vn.mbm.phimp.me.leafpic.SelectAlbumBottomSheet;
 import vn.mbm.phimp.me.base.SharedMediaActivity;
@@ -51,6 +52,10 @@ import vn.mbm.phimp.me.leafpic.util.PreferenceUtil;
 import vn.mbm.phimp.me.leafpic.util.SecurityHelper;
 import vn.mbm.phimp.me.leafpic.util.StringUtils;
 import vn.mbm.phimp.me.leafpic.views.HackyViewPager;
+
+import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
+import com.xinlan.imageeditlibrary.editimage.utils.BitmapUtils;
+import com.xinlan.imageeditlibrary.picchooser.SelectPictureActivity;
 
 import java.io.File;
 
@@ -72,6 +77,8 @@ public class SingleMediaActivity extends SharedMediaActivity {
     private SecurityHelper securityObj;
     private Toolbar toolbar;
     private boolean fullScreenMode, customUri = false;
+    public static final int ACTION_REQUEST_EDITIMAGE = 9;
+    private String path;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -418,11 +425,16 @@ public class SingleMediaActivity extends SharedMediaActivity {
                 return true;
 
             case R.id.action_edit:
-                Uri mDestinationUri = Uri.fromFile(new File(getCacheDir(), "croppedImage.png"));
+                //Uri mDestinationUri = Uri.fromFile(new File(getCacheDir(), "croppedImage.png"));
                 Uri uri = Uri.fromFile(new File(getAlbum().getCurrentMedia().getPath()));
-                UCrop uCrop = UCrop.of(uri, mDestinationUri);
+                Intent intentforActivity= new Intent(SingleMediaActivity.this,EditImageActivity.class);
+                intentforActivity.putExtra("imageUri", uri.toString());
+                startActivity(intentforActivity);
+                //File outputFile = FileUtils.genEditFile();
+                //EditImageActivity.start(this,path,uri,ACTION_REQUEST_EDITIMAGE);
+                /*UCrop uCrop = UCrop.of(uri, mDestinationUri);
                 uCrop.withOptions(getUcropOptions());
-                uCrop.start(SingleMediaActivity.this);
+                uCrop.start(SingleMediaActivity.this);*/
                 break;
 
             case R.id.action_use_as:

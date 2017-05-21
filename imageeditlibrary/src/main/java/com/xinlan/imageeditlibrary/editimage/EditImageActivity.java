@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -137,9 +138,14 @@ public class EditImageActivity extends BaseActivity {
     }
 
     private void getData() {
-        filePath = getIntent().getStringExtra(FILE_PATH);
-        saveFilePath = getIntent().getStringExtra(EXTRA_OUTPUT);// 保存图片路径
-        loadImage(filePath);
+
+        //Bundle extras = getIntent().getExtras();
+        //Uri filePath =  Uri.parse(extras.getString("imageUri"));
+        //loadImage(filepath);
+
+         filePath = getIntent().getStringExtra(FILE_PATH);
+         saveFilePath = getIntent().getStringExtra(EXTRA_OUTPUT);
+         loadImage(filePath);
     }
 
     private void initView() {
