@@ -426,6 +426,7 @@ public class SingleMediaActivity extends SharedMediaActivity {
 
             case R.id.action_edit:
                 //Uri mDestinationUri = Uri.fromFile(new File(getCacheDir(), "croppedImage.png"));
+                //Sending to EditImageActivity.java
                 Uri uri = Uri.fromFile(new File(getAlbum().getCurrentMedia().getPath()));
                 Intent intentforActivity= new Intent(SingleMediaActivity.this,EditImageActivity.class);
                 intentforActivity.putExtra("imageUri", uri.toString());
