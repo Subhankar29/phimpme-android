@@ -57,6 +57,13 @@ android {
 
     }
 
+    repositories {
+        maven {
+            url  "http://dl.bintray.com/dasar/maven"
+        }
+    }
+
+
     allprojects {
         repositories {
             jcenter()
