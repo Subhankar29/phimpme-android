@@ -6,6 +6,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,10 +16,16 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View.OnClickListener;
+
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.face.Face;
+import com.google.android.gms.vision.face.FaceDetector;
+import com.google.android.gms.vision.face.Landmark;
 
 import java.io.File;
 
@@ -70,6 +79,7 @@ public class EditImageActivity extends EditBaseActivity implements View.OnClickL
     public String filePath;
     public String saveFilePath;
     private int imageWidth, imageHeight;
+    Bitmap sunglass;
 
     public static int mode;
     public static int effectType;
@@ -82,7 +92,10 @@ public class EditImageActivity extends EditBaseActivity implements View.OnClickL
     private EditImageActivity mContext;
     public Bitmap mainBitmap;
     public ImageViewTouch mainImage;
-    private View cancel,save;
+    private View cancel,save,undo;
+    public Canvas canvas;
+    Paint rectPaint = new Paint();
+    public Bitmap mybitmap;
 
     public StickerView mStickerView;// 贴图层View
     public CropImageView mCropPanel;// 剪切操作控件
@@ -137,11 +150,85 @@ public class EditImageActivity extends EditBaseActivity implements View.OnClickL
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         checkInitImageLoader();
         setContentView(R.layout.activity_image_edit);
+        //FaceDetction
         initView();
         getData();
+        //faceDetection();
+        filePath = getIntent().getStringExtra(FILE_PATH);
+        mybitmap = BitmapFactory.decodeFile(filePath);
+        mainImage = (ImageViewTouch) findViewById(R.id.main_image);
+        mainImage.setImageBitmap(mybitmap);
+        Bitmap temporaryBitmap = Bitmap.createBitmap(mybitmap.getWidth(), mybitmap
+                .getHeight(), Bitmap.Config.RGB_565);
+        canvas = new Canvas(temporaryBitmap);
+        canvas.drawBitmap(mybitmap, 0, 0, null);
+        FaceDetector faceDetector = new FaceDetector.Builder(this)
+                .setTrackingEnabled(false)
+                .setLandmarkType(FaceDetector.ALL_LANDMARKS)
+                .build();
+        if (!faceDetector.isOperational()) {
+            Toast.makeText(EditImageActivity.this,"Face Detector did not setup",Toast.LENGTH_LONG).show();
+            return;
+        }
+        Frame frame = new Frame.Builder().setBitmap(mybitmap).build();
+        SparseArray<Face> sparseArray = faceDetector.detect(frame);
+        for (int i = 0; i < sparseArray.size(); i++) {
+
+            com.google.android.gms.vision.face.Face face = sparseArray.valueAt(i);
+            detectLandmarks(face);
+        }
         requestCode = getIntent().getIntExtra("requestCode", 1);
 
 //        setInitialFragments();
+
+    }
+
+    /*public void faceDetection() {
+        Bitmap mybitmap = BitmapFactory.decodeFile(filePath);
+        mainImage.setImageBitmap(mybitmap);
+        Bitmap temporaryBitmap = Bitmap.createBitmap(mybitmap.getWidth(), mybitmap
+                .getHeight(), Bitmap.Config.RGB_565);
+        Canvas canvas = new Canvas(temporaryBitmap);
+        canvas.drawBitmap(mybitmap, 0, 0, null);
+        FaceDetector faceDetector = new FaceDetector.Builder(this)
+                .setTrackingEnabled(false)
+                .setLandmarkType(FaceDetector.ALL_LANDMARKS)
+                .build();
+        if (!faceDetector.isOperational()) {
+            Toast.makeText(EditImageActivity.this,"Face Detector did not setup",Toast.LENGTH_LONG).show();
+            return;
+        }
+        Frame frame = new Frame.Builder().setBitmap(mybitmap).build();
+        SparseArray<Face> sparseArray = faceDetector.detect(frame);
+        for (int i = 0; i < sparseArray.size(); i++) {
+
+            com.google.android.gms.vision.face.Face face = sparseArray.valueAt(i);
+            detectLandmarks(face);
+        }
+    }*/
+
+    private void detectLandmarks(Face face) {
+        for(Landmark landmark:face.getLandmarks()){
+            int cx = (int)(landmark.getPosition().x);
+            int cy = (int) (landmark.getPosition().y);
+
+            drawOnImageView(landmark.getType(),cx,cy);
+        }
+    }
+
+    private void drawOnImageView(int type, int cx, int cy) {
+       sunglass = BitmapFactory.decodeResource(getResources(),R.drawable.sunglass);
+        Bitmap flowerLine = BitmapFactory.decodeResource(getResources(),R.drawable.flower);
+        //Draw flower
+        if(type == Landmark.NOSE_BASE)
+        {
+            int scaleWidth = flowerLine.getScaledWidth(canvas);
+            int scaleHeight = flowerLine.getScaledHeight(canvas);
+            canvas.drawBitmap(flowerLine,cx-(scaleWidth/2),cy-(scaleHeight*2),null);
+
+            //Draw sunglass
+            canvas.drawBitmap(sunglass,cx-500,cy-(scaleHeight)+120,null);
+        }
     }
 
     private void setInitialFragments() {
@@ -171,9 +258,17 @@ public class EditImageActivity extends EditBaseActivity implements View.OnClickL
         mainImage = (ImageViewTouch) findViewById(R.id.main_image);
         cancel = findViewById(R.id.edit_cancel);
         save = findViewById(R.id.edit_save);
+        undo = findViewById(R.id.edit_undo);
 
         cancel.setOnClickListener(this);
         save.setOnClickListener(this);
+        undo.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //undoEdit();
+                //faceDetection();
+            }
+        });
 
         mStickerView = (StickerView) findViewById(R.id.sticker_panel);
         mCropPanel = (CropImageView) findViewById(R.id.crop_panel);
@@ -194,6 +289,21 @@ public class EditImageActivity extends EditBaseActivity implements View.OnClickL
         paintFragment = PaintFragment.newInstance();
         cropFragment = CropFragment.newInstance();
         rotateFragment = RotateFragment.newInstance();
+    }
+
+    private void undoEdit() {
+        if(mOpTimes<=0){
+            Toast.makeText(EditImageActivity.this,"Image not Edited",Toast.LENGTH_LONG).show();
+            return;
+        }else{
+            filePath = getIntent().getStringExtra(FILE_PATH);
+            Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+            ArrayList<Bitmap> bitmapArray = new ArrayList<Bitmap>();
+            bitmapArray.add(bitmap); // Add a bitmap
+            bitmapArray.get(0); // Get first bitmap
+            mainImage.setImageBitmap(bitmapArray.get(0));
+
+        }
     }
 
     private void shareImage() {

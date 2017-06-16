@@ -113,6 +113,14 @@
             android:layout_alignStart="@+id/twitter_button"
             android:layout_alignTop="@+id/instagram_button"
             app:srcCompat="@drawable/ic_shareicon"/>
+        <ImageView
+            android:id="@+id/tweet_loggin"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_alignTop="@+id/twitter_button"
+            android:layout_alignRight="@+id/fab_home"
+            android:layout_alignEnd="@+id/fab_home"
+            android:src="@color/accent_amber"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_home"
@@ -125,7 +133,8 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"/>
-
     </RelativeLayout>
+
+
 
 </LinearLayout>

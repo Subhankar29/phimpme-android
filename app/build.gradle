@@ -111,6 +111,7 @@ dependencies {
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.google.firebase:firebase-core:10.0.1'
     compile 'com.facebook.android:facebook-android-sdk:4.23.0'
+    compile 'com.google.android.gms:play-services-vision:10.0.1'
     androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
     compile 'com.uphyca:stetho_realm:2.0.0'
     compile 'com.android.support:multidex:1.0.1'
@@ -118,4 +119,5 @@ dependencies {
     compile "com.twitter.sdk.android:twitter:$rootProject.twitterVersion"
     compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     compile "com.facebook.stetho:stetho-okhttp3:$rootProject.stethoVersion"
+    compile 'org.twitter4j:twitter4j-core:4.0.2'
 }
