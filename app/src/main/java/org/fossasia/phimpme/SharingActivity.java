@@ -3,6 +3,7 @@ package org.fossasia.phimpme;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -222,15 +223,32 @@ public class SharingActivity extends ThemedActivity implements View.OnClickListe
     }
 
     private void shareToInstagram() {
-        caption = text_caption.getText().toString();
-        Uri uri = Uri.fromFile(new File(saveFilePath));
-        Intent share = new Intent(Intent.ACTION_SEND);
-        share.setPackage("com.instagram.android");
-        share.putExtra(Intent.EXTRA_STREAM, uri);
-        share.setType("image/*");
-        share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        startActivity(Intent.createChooser(share, caption));
-        atleastOneShare = true;
+        if(isAppInstalled("com.instagram.android")) {
+            caption = text_caption.getText().toString();
+            Uri uri = Uri.fromFile(new File(saveFilePath));
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.setPackage("com.instagram.android");
+            share.putExtra(Intent.EXTRA_STREAM, uri);
+            share.setType("image/*");
+            share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(Intent.createChooser(share, caption));
+            atleastOneShare = true;
+        }else
+            Snackbar.make(parent, getResources().getString(R.string.instagram_not_installed),Snackbar.LENGTH_LONG).show();
+
+    }
+
+
+    private boolean isAppInstalled(String packageName) {
+        PackageManager pm = getPackageManager();
+        boolean installed = false;
+        try {
+            pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            installed = true;
+        } catch (PackageManager.NameNotFoundException e) {
+            installed = false;
+        }
+        return installed;
     }
 
 
