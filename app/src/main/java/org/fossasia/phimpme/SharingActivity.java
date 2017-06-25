@@ -258,7 +258,7 @@ public class SharingActivity extends ThemedActivity implements View.OnClickListe
             Snackbar.make(parent, R.string.not_connected, Snackbar.LENGTH_LONG).show();
     }
 
-    private void sharePhotoToFacebook() {
+    /*private void sharePhotoToFacebook() {
         caption = text_caption.getText().toString();
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         Bitmap image = BitmapFactory.decodeFile(saveFilePath, bmOptions);
@@ -273,6 +273,57 @@ public class SharingActivity extends ThemedActivity implements View.OnClickListe
 
         ShareApi.share(content, null);
         atleastOneShare = true;
+    }*/
+
+    private void shareFacebook() {
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+        List<String> permissionNeeds = Arrays.asList("publish_actions");
+
+        //this loginManager helps you eliminate adding a LoginButton to your UI
+        manager = LoginManager.getInstance();
+
+        manager.logInWithPublishPermissions(this, permissionNeeds);
+
+        manager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                sharePhotoToFacebook();
+            }
+
+            @Override
+            public void onCancel() {
+                System.out.println("onCancel");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                System.out.println("onError");
+            }
+        });
+    }
+
+
+    private void sharePhotoToFacebook(){
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        Bitmap image = BitmapFactory.decodeFile(saveFilePath, bmOptions);
+        SharePhoto photo = new SharePhoto.Builder()
+                .setBitmap(image)
+                .setCaption("Sending Image")
+                .build();
+
+        SharePhotoContent content = new SharePhotoContent.Builder()
+                .addPhoto(photo)
+                .build();
+
+        ShareApi.share(content, null);
+
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int responseCode, Intent data)
+    {
+        super.onActivityResult(requestCode, responseCode, data);
+        callbackManager.onActivityResult(requestCode, responseCode, data);
     }
 
     private void otherShare() {
@@ -302,12 +353,12 @@ public class SharingActivity extends ThemedActivity implements View.OnClickListe
             Snackbar.make(parent,R.string.instagram_not_installed,Snackbar.LENGTH_LONG).show();
     }
 
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int responseCode, Intent data) {
         super.onActivityResult(requestCode, responseCode, data);
         callbackManager.onActivityResult(requestCode, responseCode, data);
         atleastOneShare = true;
-    }
+    }*/
 
     private void goToHome() {
         Intent home = new Intent(SharingActivity.this, LFMainActivity.class);
