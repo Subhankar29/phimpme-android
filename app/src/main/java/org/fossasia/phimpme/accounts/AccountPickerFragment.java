@@ -28,6 +28,7 @@ import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
 import org.fossasia.phimpme.R;
 import org.fossasia.phimpme.data.local.AccountDatabase;
+import org.fossasia.phimpme.sharedrupal.drupalLogin;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -51,7 +52,7 @@ public class AccountPickerFragment extends DialogFragment {
     Realm realm = Realm.getDefaultInstance();
     AccountDatabase account;
 
-    public String[] accountsList = {"Twitter", "Facebook", "Instagram"};
+    public String[] accountsList = {"Twitter", "Facebook", "Instagram","Drupal"};
 
     public AccountPickerFragment newInstance(String title) {
         AccountPickerFragment fragment = new AccountPickerFragment();
@@ -65,7 +66,7 @@ public class AccountPickerFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.account_list)
+        AlertDialog.Builder builder1 = builder.setTitle(R.string.account_list)
                 // Creating a dialog fragment using char sequences
                 .setItems(accountsList, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -173,10 +174,15 @@ public class AccountPickerFragment extends DialogFragment {
                                                 Log.d("error", e.toString());
                                             }
                                         });
+                            case 3:
+                                Intent drupalIntent = new Intent(getContext(), drupalLogin.class);
+                                startActivity(drupalIntent);
+
                         }
                     }
                 });
         return builder.create();
+
     }
 
     @Override
