@@ -19,12 +19,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -60,6 +62,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
+
+import com.pinterest.android.pdk.PDKCallback;
+import com.pinterest.android.pdk.PDKClient;
+import com.pinterest.android.pdk.PDKException;
+import com.pinterest.android.pdk.PDKResponse;
+
 
 public class SharingActivity extends ThemedActivity implements View.OnClickListener {
 
@@ -100,6 +108,7 @@ public class SharingActivity extends ThemedActivity implements View.OnClickListe
     Utils utils = new Utils();
     Bitmap finalBmp;
     Boolean isPostedOnTwitter =false;
+
 
 
 
@@ -189,6 +198,7 @@ public class SharingActivity extends ThemedActivity implements View.OnClickListe
             case R.id.cell_11: //wordpress
                 break;
             case R.id.cell_20: //pinterest
+                shareToPinterest();
                 break;
             case R.id.cell_21: //flickr
                 break;
@@ -214,6 +224,28 @@ public class SharingActivity extends ThemedActivity implements View.OnClickListe
                  openCaptionDialogBox();
                 break;
         }
+    }
+
+    private void shareToPinterest() {
+
+        PDKClient.getInstance().createBoard("Test-1", "Board created", new PDKCallback() {
+            @Override
+            public void onSuccess(PDKResponse response) {
+                Log.d(getClass().getName(), response.getData().toString());
+                 String text = response.getData().toString();
+                Toast.makeText(SharingActivity.this, text, Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onFailure(PDKException exception) {
+                Log.e(getClass().getName(), exception.getDetailMessage());
+                String fail = exception.getDetailMessage();
+                Toast.makeText(SharingActivity.this, fail, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
     }
 
     private void openCaptionDialogBox() {

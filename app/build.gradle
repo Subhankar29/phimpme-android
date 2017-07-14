@@ -138,11 +138,12 @@ dependencies {
     compile files('libs/twitter4j-media-support-3.0.5.jar')
 
 
-    compile 'uz.shift:colorpicker:0.5@aar'
     compile files('libs/twitter4j-core-3.0.5.jar')
     compile files('libs/twitter4j-media-support-3.0.5.jar')
-    androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
     compile project(':openCVLibrary320')
+    compile 'uz.shift:colorpicker:0.5@aar'
+    androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
+    compile project(':pdk')
     compile 'uz.shift:colorpicker:0.5@aar'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.koushikdutta.ion:ion:2.1.7'
@@ -166,7 +167,7 @@ dependencies {
     compile 'com.uphyca:stetho_realm:2.0.0'
     compile 'com.android.support:multidex:1.0.1'
     androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
-    compile project(':pdk')
+    compile 'com.mcxiaoke.volley:library:1.0.+'
 }
 
 kapt {

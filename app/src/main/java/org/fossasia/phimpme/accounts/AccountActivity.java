@@ -259,6 +259,7 @@ public class AccountActivity extends ThemedActivity implements AccountContract.V
                     realm.commitTransaction();
 
                     Toast.makeText(AccountActivity.this, R.string.success, Toast.LENGTH_SHORT).show();
+
                 }
 
                 @Override

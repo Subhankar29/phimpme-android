@@ -1,2 +1,2 @@
-include ':app', ':photoview', ':pdk'
+include ':app', ':photoview', ':pdk', ':pdk.aar'
 include ':openCVLibrary320'
